@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Valheim Blueprint & Lego Viewer | 3D Visualizer & Construction Guide</title>
   <meta name="description" content="Client-side 3D viewer, resource calculator and Lego-style building guide for Valheim blueprints with bilingual support (EN/UA).">
   
@@ -40,16 +40,16 @@
       <div class="header-controls">
         <!-- Sample Blueprint Selection -->
         <div class="sample-select-wrapper">
-          <select id="sample-select">
+          <select id="sample-select" aria-label="Select sample blueprint">
             <option value="BluePrints/sheepshank-mountainfobv2.blueprint" data-i18n="sample1">Mountain FOB v2 (1,763 pieces)</option>
             <option value="BluePrints/test-sweet-house.blueprint" data-i18n="sample2">Sweet House (1,032 pieces)</option>
           </select>
         </div>
 
         <!-- Blueprint Upload Button -->
-        <label for="file-upload" class="btn-upload">
+        <label for="file-upload" class="btn-upload" title="Upload custom blueprint">
           <span>📁</span>
-          <span data-i18n="loadBlueprint">Load Blueprint</span>
+          <span class="btn-upload-text" data-i18n="loadBlueprint">Load Blueprint</span>
         </label>
         <input type="file" id="file-upload" accept=".blueprint,.txt" style="display: none;">
 
@@ -61,6 +61,12 @@
 
         <!-- Language Switcher -->
         <button id="btn-lang" class="btn-lang" title="Switch Language / Змінити мову">EN</button>
+
+        <!-- Mobile Sidebar Toggle -->
+        <button id="btn-toggle-sidebar" class="btn-toggle-sidebar" title="Toggle Guide & Resources" aria-label="Toggle Guide & Resources">
+          <span class="sidebar-toggle-icon">📋</span>
+          <span class="sidebar-toggle-text" data-i18n="tabLego">Guide</span>
+        </button>
       </div>
     </header>
 
@@ -157,12 +163,14 @@
 
           <!-- Controls & Scrubber Slider -->
           <div class="lego-controls-row">
-            <button id="btn-lego-first" class="lego-nav-btn" title="First Step">|◀</button>
-            <button id="btn-lego-prev" class="lego-nav-btn" data-i18n="btnPrev">◀ Previous</button>
-            <button id="btn-lego-play" class="lego-nav-btn btn-play-pause" data-i18n="btnPlay">▶ Auto-Build</button>
-            <button id="btn-lego-next" class="lego-nav-btn" data-i18n="btnNext">Next ▶</button>
-            <button id="btn-lego-last" class="lego-nav-btn" title="Last Step">▶|</button>
-            <button id="btn-lego-all" class="lego-nav-btn" data-i18n="btnFinish">👁 Show All</button>
+            <div class="lego-buttons-group">
+              <button id="btn-lego-first" class="lego-nav-btn" title="First Step">|◀</button>
+              <button id="btn-lego-prev" class="lego-nav-btn" data-i18n="btnPrev">◀ Previous</button>
+              <button id="btn-lego-play" class="lego-nav-btn btn-play-pause" data-i18n="btnPlay">▶ Auto-Build</button>
+              <button id="btn-lego-next" class="lego-nav-btn" data-i18n="btnNext">Next ▶</button>
+              <button id="btn-lego-last" class="lego-nav-btn" title="Last Step">▶|</button>
+              <button id="btn-lego-all" class="lego-nav-btn" data-i18n="btnFinish">👁 Show All</button>
+            </div>
 
             <div class="lego-slider-wrapper">
               <input type="range" id="lego-step-slider" min="0" max="10" value="10">
@@ -179,6 +187,12 @@
 
       <!-- Right Sidebar Panel -->
       <aside id="sidebar">
+        <!-- Mobile Sidebar Close Header -->
+        <div class="mobile-sidebar-header">
+          <span class="mobile-sidebar-title">📋 <span data-i18n="tabLego">Assembly Guide & Stats</span></span>
+          <button id="btn-close-sidebar" class="btn-close-sidebar" title="Close Panel" aria-label="Close sidebar">✕</button>
+        </div>
+
         <!-- Tabs Header -->
         <div class="sidebar-tabs">
           <button class="tab-btn active" data-tab="tab-lego">
@@ -340,6 +354,9 @@
           </div>
         </div>
       </aside>
+
+      <!-- Mobile Sidebar Backdrop Overlay -->
+      <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
     </main>
 
     <!-- Drag & Drop Visual Overlay -->

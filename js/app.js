@@ -50,6 +50,41 @@ class AppController {
       });
     }
 
+    // Mobile Sidebar Drawer Toggle
+    const appContainer = document.getElementById('app-container');
+    const btnToggleSidebar = document.getElementById('btn-toggle-sidebar');
+    const btnCloseSidebar = document.getElementById('btn-close-sidebar');
+    const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+
+    const toggleSidebar = (forceState) => {
+      if (!appContainer) return;
+      const isOpen = forceState !== undefined 
+        ? forceState 
+        : !appContainer.classList.contains('sidebar-open');
+      appContainer.classList.toggle('sidebar-open', isOpen);
+      setTimeout(() => this.viewer.onResize(), 300);
+    };
+
+    if (btnToggleSidebar) {
+      btnToggleSidebar.addEventListener('click', () => toggleSidebar());
+    }
+    if (btnCloseSidebar) {
+      btnCloseSidebar.addEventListener('click', () => toggleSidebar(false));
+    }
+    if (sidebarBackdrop) {
+      sidebarBackdrop.addEventListener('click', () => toggleSidebar(false));
+    }
+
+    // Viewport HUD Mobile Collapse/Expand
+    const viewportHud = document.querySelector('.viewport-hud');
+    if (viewportHud) {
+      viewportHud.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+          viewportHud.classList.toggle('expanded');
+        }
+      });
+    }
+
     // Textures On/Off Toggle
     const btnTextures = document.getElementById('btn-toggle-textures');
     if (btnTextures) {
@@ -618,6 +653,9 @@ class AppController {
           e.stopPropagation();
           this.lego.goToStep(idx);
           this.viewer.focusStep(step);
+          if (window.innerWidth <= 991) {
+            document.getElementById('app-container')?.classList.remove('sidebar-open');
+          }
         });
       }
 
@@ -629,6 +667,9 @@ class AppController {
           this.lego.goToStep(idx);
           this.lego.setShowAll(false);
           this.lego.setDisplayMode('isolate');
+          if (window.innerWidth <= 991) {
+            document.getElementById('app-container')?.classList.remove('sidebar-open');
+          }
         });
       }
 
