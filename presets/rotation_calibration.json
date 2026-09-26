@@ -1,0 +1,232 @@
+{
+  "IG_Chevron_Floor": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "Pickable_Branch": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "Pickable_Flint": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "Pickable_Stone": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "darkwood_arch": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "darkwood_beam_67": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "darkwood_roof": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "darkwood_roof_45": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "darkwood_roof_67": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "darkwood_roof_icorner": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "darkwood_roof_icorner_45": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "darkwood_roof_icorner_67": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "darkwood_roof_ocorner": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "darkwood_roof_ocorner_45": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "darkwood_roof_ocorner_67": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "darkwood_roof_top": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "darkwood_roof_top_45": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "darkwood_roof_top_67": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "ig_tall_stairs": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "piece_grausten_roof_45": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "piece_grausten_roof_45_arch": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "piece_grausten_roof_45_arch_corner": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "piece_grausten_roof_45_arch_corner2": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "rae_brickstone_wall_1x1": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "rae_woodwall_3": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "shingle_roof_45": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "stave_deco_beam_45": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "stave_deco_beam_67": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "stone_window_big": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "straw_roof_26": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "straw_roof_45": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "wood_beam_67": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "wood_pole_log_4": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "wood_roof": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "wood_roof_26": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "wood_roof_45": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "wood_roof_icorner": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "wood_roof_icorner_45": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "wood_roof_ocorner": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "wood_roof_ocorner_45": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "wood_roof_top": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "wood_roof_top_45": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "wood_stair": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "wood_stepladder": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "wooden_fence_2": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "wooden_window_big": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  }
+}

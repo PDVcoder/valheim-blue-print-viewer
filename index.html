@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Valheim Blueprint & Lego Viewer | 3D Visualizer & Construction Guide</title>
+  <meta name="description" content="Client-side 3D viewer, resource calculator and Lego-style building guide for Valheim blueprints with bilingual support (EN/UA).">
+  
+  <link rel="stylesheet" href="css/styles.css">
+  
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./js/vendor/three.module.js",
+      "three/addons/controls/OrbitControls.js": "./js/vendor/OrbitControls.js",
+      "three/addons/loaders/GLTFLoader.js": "./js/vendor/GLTFLoader.js",
+      "three/addons/utils/BufferGeometryUtils.js": "./js/utils/BufferGeometryUtils.js"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="app-container">
+    <!-- Header -->
+    <header>
+      <div class="brand">
+        <div class="brand-icon">ᚢ</div>
+        <div class="brand-text">
+          <h1>
+            <span data-i18n="appTitle">Valheim Blueprint & Lego Viewer</span>
+            <span class="badge" id="blueprint-pieces-count">0</span>
+          </h1>
+          <p>
+            <span id="blueprint-name">Mountain FOB v2</span>
+            &bull; <span data-i18n="author">Creator</span>: <strong id="blueprint-author">Sheepshank</strong>
+          </p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <!-- Sample Blueprint Selection -->
+        <div class="sample-select-wrapper">
+          <select id="sample-select">
+            <option value="BluePrints/sheepshank-mountainfobv2.blueprint" data-i18n="sample1">Mountain FOB v2 (1,763 pieces)</option>
+            <option value="BluePrints/test-sweet-house.blueprint" data-i18n="sample2">Sweet House (1,032 pieces)</option>
+          </select>
+        </div>
+
+        <!-- Blueprint Upload Button -->
+        <label for="file-upload" class="btn-upload">
+          <span>📁</span>
+          <span data-i18n="loadBlueprint">Load Blueprint</span>
+        </label>
+        <input type="file" id="file-upload" accept=".blueprint,.txt" style="display: none;">
+
+        <!-- Textures On/Off Toggle -->
+        <button id="btn-toggle-textures" class="btn-textures active" title="Toggle Textures (On / Off)">
+          <span class="tex-icon">🎨</span>
+          <span class="tex-text" data-i18n="texturesOn">Textures: ON</span>
+        </button>
+
+        <!-- Language Switcher -->
+        <button id="btn-lang" class="btn-lang" title="Switch Language / Змінити мову">EN</button>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main>
+      <!-- 3D Viewport -->
+      <div id="viewport-container">
+        <!-- HUD Performance Overlay -->
+        <div class="viewport-hud">
+          <span class="valheim-badge">ᚱ VALHEIM CAD ENGINE</span>
+          <span><span data-i18n="fps">FPS</span>: <strong id="hud-fps">60</strong></span>
+          <span><span data-i18n="drawCalls">Draw Calls</span>: <strong id="hud-draw-calls">--</strong></span>
+          <span><span data-i18n="triangles">Triangles</span>: <strong id="hud-triangles">--</strong></span>
+          <span><span data-i18n="dimensions">Dimensions</span>: <strong id="hud-dimensions">--</strong></span>
+        </div>
+
+        <!-- Floating View & Camera Controls -->
+        <div class="floating-toolbar">
+          <button id="tool-reset" class="tool-btn" data-i18n="focusAll" title="Focus Structure">🎯 Focus</button>
+          <button class="tool-btn" data-camera-preset="perspective" data-i18n="viewPerspective">Persp</button>
+          <button class="tool-btn" data-camera-preset="top" data-i18n="viewTop">Top</button>
+          <button class="tool-btn" data-camera-preset="front" data-i18n="viewFront">Front</button>
+          <button class="tool-btn" data-camera-preset="side" data-i18n="viewSide">Side</button>
+          <button class="tool-btn" data-camera-preset="iso" data-i18n="viewIso">Iso</button>
+          <button id="tool-wireframe" class="tool-btn" data-i18n="toggleWireframe" title="Toggle Wireframe">Wire</button>
+          <button id="tool-grid" class="tool-btn active" data-i18n="toggleGrid" title="Toggle Grid">Grid</button>
+          <button id="tool-calibrate" class="tool-btn" title="Rotation Calibration Tool">⚙️ Calibrate</button>
+        </div>
+
+        <!-- Floating Rotation Calibration HUD -->
+        <div id="calib-floating-hud" class="calib-hud" style="display: none;">
+          <div class="calib-hud-header">
+            <span class="calib-hud-title">⚙️ Rotation Calibration</span>
+            <button id="hud-calib-close" class="calib-hud-close" title="Close HUD">✕</button>
+          </div>
+          <div class="calib-hud-body">
+            <div class="calib-hud-meta">
+              <span id="hud-calib-prefab-name" class="calib-hud-name">Click any piece in 3D</span>
+              <span id="hud-calib-count" class="calib-hud-count"></span>
+            </div>
+            <div id="hud-calib-angles" class="calib-hud-angles">Yaw: 0° | Pitch: 0° | Roll: 0°</div>
+            <div class="calib-hud-controls">
+              <div class="calib-control-group">
+                <span class="calib-axis-label">Horizontal (Yaw - Y)</span>
+                <div class="calib-btn-row">
+                  <button id="hud-rot-y-plus" class="calib-btn" title="Turn Right +90°">⟳ +90°</button>
+                  <button id="hud-rot-y-minus" class="calib-btn" title="Turn Left -90°">⟲ -90°</button>
+                  <button id="hud-rot-y-180" class="calib-btn primary" title="Flip 180° Horizontal">🔄 180°</button>
+                </div>
+              </div>
+              <div class="calib-control-group">
+                <span class="calib-axis-label">Vertical (Pitch - X)</span>
+                <div class="calib-btn-row">
+                  <button id="hud-rot-x-plus" class="calib-btn" title="Tilt Up +90°">⬆ +90°</button>
+                  <button id="hud-rot-x-minus" class="calib-btn" title="Tilt Down -90°">⬇ -90°</button>
+                  <button id="hud-rot-x-180" class="calib-btn primary" title="Flip 180° Vertical (Upside-down)">↕ 180°</button>
+                </div>
+              </div>
+              <div class="calib-control-group">
+                <span class="calib-axis-label">Roll (Z) & Reset</span>
+                <div class="calib-btn-row">
+                  <button id="hud-rot-z-plus" class="calib-btn" title="Roll Left +90°">⤾ +90°</button>
+                  <button id="hud-rot-z-minus" class="calib-btn" title="Roll Right -90°">⤿ -90°</button>
+                  <button id="hud-rot-reset" class="calib-btn danger" title="Reset all angles to 0°">↺ Reset</button>
+                </div>
+              </div>
+            </div>
+            <div id="hud-calib-status" class="calib-hud-status">Saved to presets/rotation_calibration.json</div>
+          </div>
+        </div>
+
+        <!-- Exploded View Slider -->
+        <div class="explode-control">
+          <span data-i18n="explodeView">Exploded View</span>
+          <input type="range" id="explode-slider" min="0" max="2" step="0.05" value="0">
+        </div>
+
+        <!-- Floating Bottom Lego Step Controller -->
+        <div class="lego-controller-bar">
+          <div class="lego-top-row">
+            <div class="lego-step-title">
+              <span class="step-number" id="lego-step-number" data-i18n="modeAll">Full View</span>
+              <span class="stage-desc" id="lego-stage-desc" data-i18n="stageAll">Full Blueprint Overview</span>
+            </div>
+
+            <!-- Lego Display Modes -->
+            <div class="lego-display-modes">
+              <button class="lego-mode-btn active" data-lego-mode="all" data-i18n="modeAll">Full View</button>
+              <button class="lego-mode-btn" data-lego-mode="ghost" data-i18n="modeGhost">Ghost</button>
+              <button class="lego-mode-btn" data-lego-mode="solid" data-i18n="modeSolid">Solid</button>
+              <button class="lego-mode-btn" data-lego-mode="isolate" data-i18n="modeIsolate">Isolate</button>
+            </div>
+          </div>
+
+          <!-- Controls & Scrubber Slider -->
+          <div class="lego-controls-row">
+            <button id="btn-lego-first" class="lego-nav-btn" title="First Step">|◀</button>
+            <button id="btn-lego-prev" class="lego-nav-btn" data-i18n="btnPrev">◀ Previous</button>
+            <button id="btn-lego-play" class="lego-nav-btn btn-play-pause" data-i18n="btnPlay">▶ Auto-Build</button>
+            <button id="btn-lego-next" class="lego-nav-btn" data-i18n="btnNext">Next ▶</button>
+            <button id="btn-lego-last" class="lego-nav-btn" title="Last Step">▶|</button>
+            <button id="btn-lego-all" class="lego-nav-btn" data-i18n="btnFinish">👁 Show All</button>
+
+            <div class="lego-slider-wrapper">
+              <input type="range" id="lego-step-slider" min="0" max="10" value="10">
+              <span class="progress-text" id="lego-progress-text">100%</span>
+            </div>
+          </div>
+
+          <!-- Parts Pill Card for Active Step -->
+          <div class="lego-parts-badge" id="lego-step-parts">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Sidebar Panel -->
+      <aside id="sidebar">
+        <!-- Tabs Header -->
+        <div class="sidebar-tabs">
+          <button class="tab-btn active" data-tab="tab-lego">
+            <span>🧩</span>
+            <span data-i18n="tabLego">Lego Guide</span>
+          </button>
+          <button class="tab-btn" data-tab="tab-resources">
+            <span>📦</span>
+            <span data-i18n="tabResources">Resources</span>
+          </button>
+          <button class="tab-btn" data-tab="tab-pieces">
+            <span>🧱</span>
+            <span data-i18n="tabPieces">Piece Catalog</span>
+          </button>
+          <button class="tab-btn" data-tab="tab-calibrate">
+            <span>⚙️</span>
+            <span>Calibrate</span>
+          </button>
+        </div>
+
+        <!-- Tab 1: Lego Instructions -->
+        <div id="tab-lego" class="tab-content active">
+          <div class="panel-section-title">
+            <span data-i18n="legoHeader">Assembly Instructions</span>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <label for="layer-height-select" style="font-size: 0.72rem; color: var(--text-muted);" data-i18n="layerHeight">Layer Thickness</label>
+              <select id="layer-height-select" style="background: var(--bg-tertiary); color: #fff; border: 1px solid var(--border-medium); border-radius: 4px; padding: 2px 6px; font-size: 0.72rem;">
+                <option value="0.75">0.75m</option>
+                <option value="1.0">1.0m</option>
+                <option value="1.5" selected>1.5m</option>
+                <option value="2.0">2.0m</option>
+                <option value="3.0">3.0m</option>
+              </select>
+            </div>
+          </div>
+          <p class="panel-section-desc" data-i18n="legoSubheader">Build layer-by-layer like a real Lego manual</p>
+
+          <!-- Step Timeline Cards List -->
+          <div id="lego-timeline-container" class="materials-list" style="margin-top: 6px;">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Tab 2: Bill of Materials & Logistics -->
+        <div id="tab-resources" class="tab-content">
+          <div class="panel-section-title">
+            <span data-i18n="resHeader">Bill of Materials</span>
+            <button id="btn-copy-resources" class="btn-copy-mats">
+              <span>📋</span>
+              <span data-i18n="copyResourceList">Copy List</span>
+            </button>
+          </div>
+          <p class="panel-section-desc" data-i18n="resSubheader">Aggregated crafting cost and logistical requirements</p>
+
+          <!-- Storage Logistics Card -->
+          <div class="logistics-card">
+            <h3 data-i18n="stacksLogistics">Logistics & Storage Footprint</h3>
+            <div class="chest-grid">
+              <div class="chest-box">
+                <span class="label" data-i18n="woodChests">Wood Chests (10)</span>
+                <span class="val" id="count-wood-chests">0</span>
+              </div>
+              <div class="chest-box">
+                <span class="label" data-i18n="reinforcedChests">Reinf Chests (24)</span>
+                <span class="val" id="count-reinf-chests">0</span>
+              </div>
+            </div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+              <span data-i18n="fullStacks">Total Inventory Stacks</span>
+              <strong id="count-total-slots" style="color: var(--gold);">0</strong>
+            </div>
+          </div>
+
+          <!-- Category Filter Pills -->
+          <div style="display: flex; gap: 4px; flex-wrap: wrap; margin: 4px 0;">
+            <button class="lego-mode-btn active" data-cat-filter="all" data-i18n="allCategories">All</button>
+            <button class="lego-mode-btn" data-cat-filter="wood" data-i18n="catWood">Wood</button>
+            <button class="lego-mode-btn" data-cat-filter="stone" data-i18n="catStone">Stone</button>
+            <button class="lego-mode-btn" data-cat-filter="darkwood" data-i18n="catDarkwood">Darkwood</button>
+            <button class="lego-mode-btn" data-cat-filter="iron" data-i18n="catIron">Iron</button>
+            <button class="lego-mode-btn" data-cat-filter="furniture" data-i18n="catFurniture">Furniture</button>
+            <button class="lego-mode-btn" data-cat-filter="crafting" data-i18n="catCrafting">Crafting</button>
+          </div>
+
+          <!-- Materials Required List -->
+          <div id="materials-list-container" class="materials-list">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Tab 3: Piece Catalog -->
+        <div id="tab-pieces" class="tab-content">
+          <div class="panel-section-title">
+            <span data-i18n="catalogHeader">Pieces Breakdown</span>
+          </div>
+          <div class="search-wrapper">
+            <input type="text" id="pieces-search" class="search-input" data-i18n-placeholder="searchPieces" placeholder="Search piece name or prefab...">
+          </div>
+          <div id="pieces-list-container" class="pieces-list">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Tab 4: Rotation Calibration Tool -->
+        <div id="tab-calibrate" class="tab-content">
+          <div class="panel-section-title">
+            <span>⚙️ Rotation Calibration</span>
+            <button id="btn-calib-save-now" class="lego-nav-btn" style="padding: 2px 8px; font-size: 0.72rem;">💾 Save File</button>
+          </div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">
+            Click any piece in 3D (or select below) to rotate all pieces of that type. Changes auto-save to <code>presets/rotation_calibration.json</code>.
+          </div>
+
+          <!-- Active Selected Piece Card -->
+          <div class="calib-selected-card">
+            <div class="calib-selected-header">
+              <span id="calib-selected-title" style="font-weight: 600; color: #fff;">No piece selected</span>
+              <span id="calib-selected-angles" style="color: var(--gold); font-family: monospace; font-size: 0.8rem;">X: 0° | Y: 0° | Z: 0°</span>
+            </div>
+            <div class="calib-hud-controls" style="margin-top: 6px;">
+              <div class="calib-control-group">
+                <span class="calib-axis-label">Horizontal (Yaw - Y)</span>
+                <div class="calib-btn-row">
+                  <button id="tab-rot-y-plus" class="calib-btn" title="Turn Right +90°">⟳ +90°</button>
+                  <button id="tab-rot-y-minus" class="calib-btn" title="Turn Left -90°">⟲ -90°</button>
+                  <button id="tab-rot-y-180" class="calib-btn primary" title="Flip 180° Horizontal">🔄 180°</button>
+                </div>
+              </div>
+              <div class="calib-control-group">
+                <span class="calib-axis-label">Vertical (Pitch - X)</span>
+                <div class="calib-btn-row">
+                  <button id="tab-rot-x-plus" class="calib-btn" title="Tilt Up +90°">⬆ +90°</button>
+                  <button id="tab-rot-x-minus" class="calib-btn" title="Tilt Down -90°">⬇ -90°</button>
+                  <button id="tab-rot-x-180" class="calib-btn primary" title="Flip 180° Vertical (Upside-down)">↕ 180°</button>
+                </div>
+              </div>
+              <div class="calib-control-group">
+                <span class="calib-axis-label">Roll (Z) & Reset</span>
+                <div class="calib-btn-row">
+                  <button id="tab-rot-z-plus" class="calib-btn" title="Roll Left +90°">⤾ +90°</button>
+                  <button id="tab-rot-z-minus" class="calib-btn" title="Roll Right -90°">⤿ -90°</button>
+                  <button id="tab-rot-reset" class="calib-btn danger" title="Reset all angles to 0°">↺ Reset</button>
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 8px; margin-top: 10px;">
+              <button id="btn-calib-copy" class="calib-action-btn" title="Copy JSON">📋 Copy JSON</button>
+              <button id="btn-calib-download" class="calib-action-btn" title="Download JSON">📥 Download JSON</button>
+            </div>
+            <div id="calib-save-status" class="calib-save-status">Ready</div>
+          </div>
+
+          <!-- Search and Prefab List -->
+          <div style="margin-top: 14px; margin-bottom: 8px;">
+            <input type="text" id="calib-search-input" placeholder="Search blueprint pieces..." style="width: 100%; background: var(--bg-tertiary); border: 1px solid var(--border-medium); border-radius: 6px; padding: 6px 10px; color: #fff; font-size: 0.8rem;">
+          </div>
+          <div id="calib-prefab-list" class="calib-list-container">
+            <!-- Populated by CalibrationManager -->
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Drag & Drop Visual Overlay -->
+    <div id="drop-overlay" class="drop-overlay">
+      <div style="font-size: 3rem;">📦</div>
+      <strong data-i18n="dragDropPrompt">Drop .blueprint here or click to browse</strong>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="app-toast" class="toast"></div>
+  </div>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
