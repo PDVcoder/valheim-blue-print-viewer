@@ -9,7 +9,7 @@ import json
 import os
 import sys
 
-PORT = 8080
+PORT = int(os.environ.get("PORT", 8080))
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 CALIBRATION_FILE = os.path.join(BASE_DIR, "presets", "rotation_calibration.json")
 
@@ -61,6 +61,7 @@ def run_server():
     httpd = http.server.ThreadingHTTPServer(server_address, CustomHandler)
     print(f"Valheim BP Viewer server running at http://localhost:{PORT}")
     print(f"Calibration endpoint ready at POST http://localhost:{PORT}/api/save-calibration")
+    sys.stdout.flush()
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:

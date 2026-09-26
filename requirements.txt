@@ -1,0 +1,2 @@
+# Valheim Blueprint Viewer dependencies
+# Core web server runs using Python standard library (http.server)
